@@ -32,7 +32,11 @@ const post_msg = async () => {
     await web.chat.postMessage({
       channel: slackChannelId,
       thread_ts: mainMessage.ts,
-      text: `Failed Tests Details:\n\n${failureDetails}`
+      attachments: [{
+        fallback: `Failed Tests Details:\n\n${failureDetails}`,
+        color: '#E01E5A',
+        text: `Failed Tests Details:\n\n${failureDetails}`,
+      }]
     });
   }
 
