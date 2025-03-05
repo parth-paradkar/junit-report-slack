@@ -4,7 +4,8 @@
   "description": "Github action to notify junit test results via slack",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "ncc build index.js -o dist"
   },
   "keywords": [],
   "author": "",
@@ -14,5 +15,8 @@
     "@actions/github": "^5.1.1",
     "@slack/web-api": "^6.8.1",
     "xmldom": "^0.6.0"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.38.3"
   }
 }

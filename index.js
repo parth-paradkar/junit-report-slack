@@ -8,15 +8,19 @@ const { WebClient } = require('@slack/web-api');
 const post_msg = async () => {
   const reportFilePath = core.getInput('testOutputPath');
   const testRunName = core.getInput('testRunName');
-  const slacChannelkId = core.getInput('slackChannelId');
+  const slackChannelId = core.getInput('slackChannelId');
   const token = core.getInput('slackToken');
   const web = new WebClient(
     token
   );
   const msgData = await messageBuilder(reportFilePath, testRunName);
   const result = await web.chat.postMessage({
-    text: resultMessage(msgData),
-    channel: slacChannelkId,
+    channel: slackChannelId,
+    attachments: [{
+      fallback: resultMessage(msgData),
+      color: msgData.failed > 0 ? '#E01E5A' : '#2EB67D', // red if failed, green if passed
+      text: resultMessage(msgData)
+    }]
   });
 
   console.log(result);
