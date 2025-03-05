@@ -1,4 +1,4 @@
-name: 'Junit report in Slack'
+name: 'Send Junit report in Slack'
 description: 'Detailed JUnit Test Report sent to a Slack channel'
 branding:
   icon: 'file-text'  
