@@ -14,7 +14,7 @@ const post_msg = async () => {
     token
   );
   const msgData = await messageBuilder(reportFilePath, testRunName);
-  const result = await web.chat.postMessage({
+  const mainMessage = await web.chat.postMessage({
     channel: slackChannelId,
     attachments: [{
       fallback: resultMessage(msgData),
@@ -23,7 +23,20 @@ const post_msg = async () => {
     }]
   });
 
-  console.log(result);
+  // Post failed test details in thread if there are failures
+  if (msgData.failed > 0 && msgData.failedTests.length > 0) {
+    const failureDetails = msgData.failedTests
+      .map(test => `*${test.name}*\n${test.message}`)
+      .join('\n\n');
+
+    await web.chat.postMessage({
+      channel: slackChannelId,
+      thread_ts: mainMessage.ts,
+      text: `Failed Tests Details:\n\n${failureDetails}`
+    });
+  }
+
+  console.log(mainMessage);
 };
 
 async function readReportFile(reportFilePath) {
@@ -39,12 +52,27 @@ async function messageBuilder(reportFilePath, testRunName) {
     'text/xml'
   );
   const testSuiteNodes = xmlDoc.getElementsByTagName('testsuite')[0];
+  const testCases = xmlDoc.getElementsByTagName('testcase');
+  
+  const failedTests = [];
+  for (let i = 0; i < testCases.length; i++) {
+    const testCase = testCases[i];
+    const errorNode = testCase.getElementsByTagName('error')[0] || testCase.getElementsByTagName('failure')[0];
+    if (errorNode) {
+      failedTests.push({
+        name: testCase.getAttribute('name'),
+        message: errorNode.getAttribute('message')
+      });
+    }
+  }
+
   const testResult = {
     title: `*${testRunName}*`,
     total: Number(testSuiteNodes.getAttribute('tests')),
     failed: Number(testSuiteNodes.getAttribute('failures')),
     skipped: Number(testSuiteNodes.getAttribute('skipped')),
-    time: testSuiteNodes.getAttribute('time')
+    time: testSuiteNodes.getAttribute('time'),
+    failedTests
   };
   testResult.passed = testResult.total - (testResult.failed + testResult.skipped);
   return testResult;
