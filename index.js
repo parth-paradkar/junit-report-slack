@@ -57,7 +57,7 @@ async function messageBuilder(reportFilePath, testRunName) {
   );
   const testSuiteNodes = xmlDoc.getElementsByTagName('testsuite')[0];
   const testCases = xmlDoc.getElementsByTagName('testcase');
-  
+
   const failedTests = [];
   for (let i = 0; i < testCases.length; i++) {
     const testCase = testCases[i];
@@ -83,7 +83,8 @@ async function messageBuilder(reportFilePath, testRunName) {
 }
 
 function resultMessage(msgData) {
-  return `${msgData.title} \n Total: \`${msgData.total}\` | Passed: \`${msgData.passed}\` | Failed: \`${msgData.failed}\` | Skipped: \`${msgData.skipped}\` \n Execution Time: \`${msgData.time}\``;
+  const runUrl = `${github.server_url}/${github.repository}/actions/runs/${github.run_id}`;
+  return `${msgData.title} \n Total: \`${msgData.total}\` | Passed: \`${msgData.passed}\` | Failed: \`${msgData.failed}\` | Skipped: \`${msgData.skipped}\` \n Execution Time: \`${msgData.time}\` \n Run URL: ${runUrl}`;
 }
 
 post_msg().catch(console.log);
