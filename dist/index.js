@@ -21401,7 +21401,7 @@ async function messageBuilder(reportFilePath, testRunName) {
 }
 
 function resultMessage(msgData) {
-  const runUrl = `${github.server_url}/${github.repository}/actions/runs/${github.run_id}`;
+  const runUrl = `${github.context.serverUrl}/${github.context.repo.repo}/actions/runs/${github.context.runId}`;
   return `${msgData.title} \n Total: \`${msgData.total}\` | Passed: \`${msgData.passed}\` | Failed: \`${msgData.failed}\` | Skipped: \`${msgData.skipped}\` \n Execution Time: \`${msgData.time}\` \n Run URL: ${runUrl}`;
 }
 
